@@ -140,6 +140,16 @@ body {
     transform: scale(1.1);
 }
 
+.portfolio-item a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.portfolio-item:hover a {
+    color: inherit;
+}
+
 /* 服務項目樣式 */
 .services {
     padding: 5rem 5%;

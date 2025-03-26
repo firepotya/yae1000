@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現代風格客廳 - 精湛木工</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .project-detail {
+            padding: 120px 5% 5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .project-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
+        .project-description {
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .project-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .project-features {
+            background-color: #f9f9f9;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 3rem;
+        }
+
+        .project-features h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .project-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .project-features li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .project-features li:before {
+            content: "•";
+            color: #e67e22;
+            position: absolute;
+            left: 0;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #e67e22;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>精湛木工</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html#home">首頁</a></li>
+                <li><a href="index.html#portfolio">作品集</a></li>
+                <li><a href="index.html#services">服務項目</a></li>
+                <li><a href="index.html#about">關於我們</a></li>
+                <li><a href="index.html#contact">聯絡我們</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="project-detail">
+        <h1 class="project-title">現代風格客廳</h1>
+        
+        <div class="project-description">
+            <p>這個現代風格客廳設計融合了簡約與實用性，採用高質感的木工製作，打造出既美觀又實用的居家空間。電視櫃採用懸浮式設計，搭配隱藏式收納，讓空間更加開闊。整體色調以溫暖的木色為主，搭配白色牆面，營造出舒適宜人的氛圍。</p>
+        </div>
+
+        <div class="project-gallery">
+            <div class="gallery-item">
+                <img src="./images/project1.jpg" alt="現代風格客廳全景">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/project1-2.jpg" alt="電視櫃特寫">
+            </div>
+            <div class="gallery-item">
+                <img src="./images/project1-3.jpg" alt="收納櫃細節">
+            </div>
+        </div>
+
+        <div class="project-features">
+            <h3>設計特點</h3>
+            <ul>
+                <li>懸浮式電視櫃設計，增加空間感</li>
+                <li>隱藏式收納系統，保持空間整潔</li>
+                <li>採用高級實木材料，確保耐用性</li>
+                <li>客製化尺寸，完美符合空間需求</li>
+                <li>細緻的收邊處理，展現專業工藝</li>
+            </ul>
+        </div>
+
+        <div class="project-features">
+            <h3>施工細節</h3>
+            <ul>
+                <li>現場丈量與規劃</li>
+                <li>3D 設計圖確認</li>
+                <li>材料選擇與確認</li>
+                <li>專業施工團隊</li>
+                <li>完工驗收與保固</li>
+            </ul>
+        </div>
+
+        <a href="index.html#portfolio" class="back-button">
+            <i class="fas fa-arrow-left"></i> 返回作品集
+        </a>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>精湛木工</h3>
+                <p>專業木工室內裝修團隊</p>
+            </div>
+            <div class="footer-section">
+                <h3>營業時間</h3>
+                <p>週一至週五：9:00 - 18:00</p>
+                <p>週六：10:00 - 17:00</p>
+                <p>週日：休息</p>
+            </div>
+            <div class="footer-section">
+                <h3>追蹤我們</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-line"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 精湛木工. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+</body>
+</html> 
