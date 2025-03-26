@@ -53,7 +53,7 @@ body {
 /* 首頁橫幅樣式 */
 .hero {
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/hero-bg.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./images/project1.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
