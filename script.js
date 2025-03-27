@@ -70,4 +70,25 @@ contactForm.addEventListener('submit', (e) => {
     // 顯示成功訊息
     alert('感謝您的訊息！我們會盡快與您聯繫。');
     contactForm.reset();
+});
+
+// 回到頂部按鈕功能
+const backToTopButton = document.querySelector('.back-to-top');
+
+// 監聽滾動事件
+window.addEventListener('scroll', () => {
+    // 當頁面滾動超過 300px 時顯示按鈕
+    if (window.scrollY > 300) {
+        backToTopButton.classList.add('visible');
+    } else {
+        backToTopButton.classList.remove('visible');
+    }
+});
+
+// 點擊按鈕回到頂部
+backToTopButton.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }); 
