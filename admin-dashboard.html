@@ -646,7 +646,6 @@
 
         // 處理狀態變更
         function handleStatusChange(imageId, newStatus) {
-            // 顯示確認按鈕
             const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
             const confirmButton = select.parentElement.querySelector('.confirm-button');
             if (confirmButton) {
@@ -655,7 +654,7 @@
         }
 
         // 確認狀態變更
-        async function confirmStatusChange(imageId) {
+        function confirmStatusChange(imageId) {
             try {
                 const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
                 const imageIndex = uploadedImages.findIndex(img => img.id === imageId);
@@ -696,7 +695,7 @@
         }
 
         // 刪除圖片
-        async function deleteImage(imageId) {
+        function deleteImage(imageId) {
             if (confirm('確定要刪除這張圖片嗎？')) {
                 try {
                     const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
