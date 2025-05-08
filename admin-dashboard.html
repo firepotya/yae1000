@@ -647,7 +647,7 @@
         // 處理狀態變更
         function handleStatusChange(imageId, newStatus) {
             // 顯示確認按鈕
-            const confirmButton = document.querySelector(`.gallery-item .confirm-button[onclick="confirmStatusChange('${imageId}')"]`);
+            const confirmButton = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`).parentElement.querySelector('.confirm-button');
             if (confirmButton) {
                 confirmButton.style.display = 'inline-block';
             }
@@ -677,7 +677,7 @@
                     localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
                     
                     // 隱藏確認按鈕
-                    const confirmButton = document.querySelector(`.gallery-item .confirm-button[onclick="confirmStatusChange('${imageId}')"]`);
+                    const confirmButton = select.parentElement.querySelector('.confirm-button');
                     if (confirmButton) {
                         confirmButton.style.display = 'none';
                     }
