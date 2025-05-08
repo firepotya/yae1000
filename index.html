@@ -23,11 +23,11 @@
         </nav>
     </header>
 
-    <section id="home" class="hero">
+    <section class="hero" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./images/hero-bg.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
         <div class="hero-content">
-            <h1>專業木工室內裝修</h1>
-            <p>打造獨一無二的居家空間</p>
-            <a href="#portfolio" class="cta-button">查看作品集</a>
+            <h1>精工木作坊</h1>
+            <p>傳承工藝，打造永恆</p>
+            <a href="#portfolio" class="cta-button">查看作品</a>
         </div>
     </section>
 
@@ -161,5 +161,62 @@
     </div>
 
     <script src="./script.js"></script>
+    <script>
+        // 載入首頁圖片
+        async function loadHomepageImage() {
+            try {
+                const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                const activeHomepageImage = uploadedImages.find(img => 
+                    img.type === 'homepage' && img.status === 'active'
+                );
+
+                if (activeHomepageImage) {
+                    const heroSection = document.querySelector('.hero');
+                    heroSection.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('${activeHomepageImage.url}')`;
+                }
+            } catch (error) {
+                console.error('載入首頁圖片失敗:', error);
+            }
+        }
+
+        // 載入作品集圖片
+        async function loadPortfolioImages() {
+            try {
+                const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
+                const activePortfolioImages = uploadedImages.filter(img => 
+                    img.type === 'portfolio' && img.status === 'active'
+                );
+
+                const portfolioGrid = document.getElementById('portfolioGrid');
+                portfolioGrid.innerHTML = '';
+
+                if (activePortfolioImages.length === 0) {
+                    portfolioGrid.innerHTML = '<p style="text-align: center; color: #666;">尚無作品展示</p>';
+                    return;
+                }
+
+                activePortfolioImages.forEach(image => {
+                    const portfolioItem = document.createElement('div');
+                    portfolioItem.className = 'portfolio-item';
+                    portfolioItem.innerHTML = `
+                        <img src="${image.url}" alt="${image.name}">
+                        <div class="portfolio-overlay">
+                            <h3>${image.name}</h3>
+                            <a href="modern-living-room.html" class="btn">查看詳情</a>
+                        </div>
+                    `;
+                    portfolioGrid.appendChild(portfolioItem);
+                });
+            } catch (error) {
+                console.error('載入作品集圖片失敗:', error);
+            }
+        }
+
+        // 頁面載入完成後執行
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHomepageImage();
+            loadPortfolioImages();
+        });
+    </script>
 </body>
 </html> 
