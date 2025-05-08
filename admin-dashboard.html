@@ -647,7 +647,8 @@
         // 處理狀態變更
         function handleStatusChange(imageId, newStatus) {
             // 顯示確認按鈕
-            const confirmButton = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`).parentElement.querySelector('.confirm-button');
+            const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
+            const confirmButton = select.parentElement.querySelector('.confirm-button');
             if (confirmButton) {
                 confirmButton.style.display = 'inline-block';
             }
@@ -663,6 +664,7 @@
                     const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
                     const newStatus = select.value;
                     
+                    // 更新圖片狀態
                     uploadedImages[imageIndex].status = newStatus;
                     
                     // 如果是首頁圖片，確保只有一張是啟用的
@@ -674,6 +676,7 @@
                         });
                     }
                     
+                    // 保存更新後的圖片列表
                     localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
                     
                     // 隱藏確認按鈕
