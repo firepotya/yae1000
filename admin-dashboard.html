@@ -517,7 +517,7 @@
                             name: file.name,
                             size: file.size,
                             type: imageType,
-                            status: 'pending'
+                            status: 'active'
                         });
                         localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
                         
@@ -575,7 +575,6 @@
                                 </div>
                                 <div class="status-controls">
                                     <select onchange="handleStatusChange('${image.id}', this.value)">
-                                        <option value="pending" ${image.status === 'pending' ? 'selected' : ''}>待處理</option>
                                         <option value="active" ${image.status === 'active' ? 'selected' : ''}>啟用</option>
                                         <option value="inactive" ${image.status === 'inactive' ? 'selected' : ''}>停用</option>
                                     </select>
@@ -613,7 +612,6 @@
                                 </div>
                                 <div class="status-controls">
                                     <select onchange="handleStatusChange('${image.id}', this.value)">
-                                        <option value="pending" ${image.status === 'pending' ? 'selected' : ''}>待處理</option>
                                         <option value="active" ${image.status === 'active' ? 'selected' : ''}>啟用</option>
                                         <option value="inactive" ${image.status === 'inactive' ? 'selected' : ''}>停用</option>
                                     </select>
@@ -637,7 +635,6 @@
         // 獲取狀態文字
         function getStatusText(status) {
             switch(status) {
-                case 'pending': return '待處理';
                 case 'active': return '啟用中';
                 case 'inactive': return '已停用';
                 default: return status;
