@@ -646,28 +646,10 @@
 
         // 處理狀態變更
         function handleStatusChange(imageId, newStatus) {
+            // 顯示確認按鈕
             const confirmButton = document.querySelector(`.gallery-item .confirm-button[onclick="confirmStatusChange('${imageId}')"]`);
             if (confirmButton) {
                 confirmButton.style.display = 'inline-block';
-            }
-            
-            // 立即保存狀態變更
-            const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-            const imageIndex = uploadedImages.findIndex(img => img.id === imageId);
-            
-            if (imageIndex !== -1) {
-                uploadedImages[imageIndex].status = newStatus;
-                
-                // 如果是首頁圖片，確保只有一張是啟用的
-                if (uploadedImages[imageIndex].type === 'homepage' && newStatus === 'active') {
-                    uploadedImages.forEach((img, index) => {
-                        if (index !== imageIndex && img.type === 'homepage' && img.status === 'active') {
-                            img.status = 'inactive';
-                        }
-                    });
-                }
-                
-                localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
             }
         }
 
@@ -680,6 +662,19 @@
                 if (imageIndex !== -1) {
                     const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
                     const newStatus = select.value;
+                    
+                    uploadedImages[imageIndex].status = newStatus;
+                    
+                    // 如果是首頁圖片，確保只有一張是啟用的
+                    if (uploadedImages[imageIndex].type === 'homepage' && newStatus === 'active') {
+                        uploadedImages.forEach((img, index) => {
+                            if (index !== imageIndex && img.type === 'homepage' && img.status === 'active') {
+                                img.status = 'inactive';
+                            }
+                        });
+                    }
+                    
+                    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
                     
                     // 隱藏確認按鈕
                     const confirmButton = document.querySelector(`.gallery-item .confirm-button[onclick="confirmStatusChange('${imageId}')"]`);
