@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理後台 - 精工木作坊</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -446,11 +448,11 @@
         }
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
+            dropZone.addEventListener('dragenter', highlight, false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
+            dropZone.addEventListener('dragleave', unhighlight, false);
         });
 
         function highlight(e) {
@@ -471,20 +473,17 @@
             fileInput.dispatchEvent(event);
         }
 
-        // 上傳表單提交
+        // 上傳表單提交（改為呼叫 /upload）
         uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const fileInput = document.getElementById('fileInput');
             const files = fileInput.files;
             const imageType = document.getElementById('imageType').value;
-            
             if (files.length === 0) {
                 errorMessage.textContent = '請選擇要上傳的圖片';
                 errorMessage.style.display = 'block';
                 return;
             }
-
             // 驗證所有檔案
             for (let file of files) {
                 try {
@@ -495,8 +494,6 @@
                     return;
                 }
             }
-
-            // 顯示進度條
             progressContainer.style.display = 'block';
             let progress = 0;
             const interval = setInterval(() => {
@@ -504,40 +501,26 @@
                 progressBar.style.width = progress + '%';
                 progressBar.textContent = progress + '%';
             }, 200);
-
             try {
-                // 上傳每個檔案
                 for (let file of files) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                        uploadedImages.push({
-                            id: Date.now() + Math.random(),
-                            url: e.target.result,
-                            name: file.name,
-                            size: file.size,
-                            type: imageType,
-                            status: 'active'
-                        });
-                        localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-                        
-                        // 重新載入圖片列表
-                        loadGallery();
-                    };
-                    reader.readAsDataURL(file);
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    formData.append('type', imageType);
+                    await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
                 }
-
                 clearInterval(interval);
                 progressBar.style.width = '100%';
                 progressBar.textContent = '100%';
-
                 successMessage.textContent = '圖片上傳成功！';
                 successMessage.style.display = 'block';
                 errorMessage.style.display = 'none';
-
-                // 清空預覽和輸入
                 previewContainer.innerHTML = '';
                 fileInput.value = '';
+                // 重新載入伺服器圖片
+                loadGalleryFromServer();
             } catch (error) {
                 clearInterval(interval);
                 errorMessage.textContent = error.message;
@@ -549,22 +532,25 @@
             }
         });
 
-        // 載入圖片
-        async function loadGallery() {
+        // 從伺服器取得圖片資料並渲染
+        async function loadGalleryFromServer() {
             try {
-                const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                
+                const res = await fetch('/images');
+                const uploadedImages = await res.json();
+                // 同步 localStorage 作快取
+                localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+                // 以下渲染邏輯與原本 loadGallery 相同
                 // 載入首頁圖片
                 const homepageImages = uploadedImages.filter(img => img.type === 'homepage');
                 const homepageGrid = document.getElementById('homepageGrid');
                 homepageGrid.innerHTML = '';
-                
                 if (homepageImages.length === 0) {
                     homepageGrid.innerHTML = '<p style="text-align: center; color: #666;">尚無首頁圖片</p>';
                 } else {
                     homepageImages.forEach(image => {
                         const galleryItem = document.createElement('div');
                         galleryItem.className = 'gallery-item';
+                        galleryItem.setAttribute('data-id', image.id);
                         galleryItem.innerHTML = `
                             <img src="${image.url}" alt="${image.name}">
                             <div class="image-actions">
@@ -587,21 +573,21 @@
                                 </div>
                             </div>
                         `;
+                        addReplaceDragEvent(galleryItem, image.id);
                         homepageGrid.appendChild(galleryItem);
                     });
                 }
-
                 // 載入作品集圖片
                 const portfolioImages = uploadedImages.filter(img => img.type === 'portfolio');
                 const portfolioGrid = document.getElementById('portfolioGrid');
                 portfolioGrid.innerHTML = '';
-                
                 if (portfolioImages.length === 0) {
                     portfolioGrid.innerHTML = '<p style="text-align: center; color: #666;">尚無作品集圖片</p>';
                 } else {
                     portfolioImages.forEach(image => {
                         const galleryItem = document.createElement('div');
                         galleryItem.className = 'gallery-item';
+                        galleryItem.setAttribute('data-id', image.id);
                         galleryItem.innerHTML = `
                             <img src="${image.url}" alt="${image.name}">
                             <div class="image-actions">
@@ -624,6 +610,7 @@
                                 </div>
                             </div>
                         `;
+                        addReplaceDragEvent(galleryItem, image.id);
                         portfolioGrid.appendChild(galleryItem);
                     });
                 }
@@ -650,67 +637,109 @@
             }
         }
 
-        // 確認狀態變更
+        // 確認狀態變更（呼叫 /images/:id PUT）
         function confirmStatusChange(imageId) {
             try {
-                const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                const imageIndex = uploadedImages.findIndex(img => img.id === imageId);
-                
-                if (imageIndex !== -1) {
-                    const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
-                    const newStatus = select.value;
-                    
-                    // 更新圖片狀態
-                    uploadedImages[imageIndex].status = newStatus;
-                    
-                    // 如果是首頁圖片，確保只有一張是啟用的
-                    if (uploadedImages[imageIndex].type === 'homepage' && newStatus === 'active') {
-                        uploadedImages.forEach((img, index) => {
-                            if (index !== imageIndex && img.type === 'homepage' && img.status === 'active') {
-                                img.status = 'inactive';
-                            }
-                        });
-                    }
-                    
-                    // 保存更新後的圖片列表
-                    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-                    
+                const select = document.querySelector(`.gallery-item select[onchange="handleStatusChange('${imageId}', this.value)"]`);
+                const newStatus = select.value;
+                fetch(`/images/${imageId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
                     // 隱藏確認按鈕
                     const confirmButton = select.parentElement.querySelector('.confirm-button');
                     if (confirmButton) {
                         confirmButton.style.display = 'none';
                     }
-                    
-                    // 重新載入圖片列表
-                    loadGallery();
+                    loadGalleryFromServer();
                     alert('狀態更新成功！');
-                }
+                })
+                .catch(error => {
+                    console.error('更新狀態失敗:', error);
+                    alert('更新狀態失敗，請重試！');
+                });
             } catch (error) {
                 console.error('更新狀態失敗:', error);
                 alert('更新狀態失敗，請重試！');
             }
         }
 
-        // 刪除圖片
+        // 刪除圖片（呼叫 /images/:id）
         function deleteImage(imageId) {
             if (confirm('確定要刪除這張圖片嗎？')) {
-                try {
-                    const uploadedImages = JSON.parse(localStorage.getItem('uploadedImages') || '[]');
-                    const updatedImages = uploadedImages.filter(image => image.id !== imageId);
-                    localStorage.setItem('uploadedImages', JSON.stringify(updatedImages));
-
-                    // 重新載入圖片列表
-                    loadGallery();
-                    alert('圖片刪除成功！');
-                } catch (error) {
-                    console.error('刪除圖片失敗:', error);
+                fetch(`/images/${imageId}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.message === '刪除成功') {
+                        loadGalleryFromServer();
+                        alert('圖片刪除成功！');
+                    } else {
+                        alert('刪除失敗，請重試！');
+                    }
+                })
+                .catch(err => {
+                    console.error('刪除圖片失敗:', err);
                     alert('刪除圖片失敗，請重試！');
-                }
+                });
             }
         }
 
-        // 頁面載入時載入圖片
-        loadGallery();
+        // 拖曳取代圖片功能（呼叫 /upload + /images/:id PUT）
+        function addReplaceDragEvent(galleryItem, imageId) {
+            galleryItem.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                galleryItem.style.border = '2px dashed #e67e22';
+            });
+            galleryItem.addEventListener('dragleave', function(e) {
+                galleryItem.style.border = '';
+            });
+            galleryItem.addEventListener('drop', function(e) {
+                e.preventDefault();
+                galleryItem.style.border = '';
+                const files = e.dataTransfer.files;
+                if (files.length === 0) return;
+                const file = files[0];
+                try {
+                    validateFile(file);
+                } catch (error) {
+                    alert(error.message);
+                    return;
+                }
+                // 先上傳新圖片檔案
+                const formData = new FormData();
+                formData.append('image', file);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // 只取 url
+                    const newUrl = data.url;
+                    // 再更新原有圖片的 url/name/size
+                    fetch(`/images/${imageId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: newUrl, name: file.name, size: file.size })
+                    })
+                    .then(() => {
+                        loadGalleryFromServer();
+                        alert('圖片已成功取代！');
+                    });
+                })
+                .catch(err => {
+                    alert('圖片取代失敗，請重試！');
+                });
+            });
+        }
+
+        // 頁面載入時載入伺服器圖片
+        loadGalleryFromServer();
     </script>
 </body>
 </html> 
